@@ -47,6 +47,16 @@ func (bsm *BasaltStateMachine) Lookup(query interface{}) (interface{}, error) {
 	switch reqData.Type {
 	case Exists:
 		return bsm.Bitmaps.Exists(reqData.Names[0], reqData.Values[0]), nil
+	case Card:
+		return bsm.Bitmaps.Card(reqData.Names[0]), nil
+	case Inter:
+		return bsm.Bitmaps.Inter(reqData.Names...), nil
+	case Union:
+		return bsm.Bitmaps.Union(reqData.Names...), nil
+	case Xor:
+		return bsm.Bitmaps.Xor(reqData.Names[0], reqData.Names[1]), nil
+	case Diff:
+		return bsm.Bitmaps.Diff(reqData.Names[0], reqData.Names[1]), nil
 	}
 
 	return nil, errors.New("invalid request type")
@@ -62,10 +72,27 @@ func (bsm *BasaltStateMachine) Update(data []byte) (sm.Result, error) {
 	switch reqData.Type {
 	case Add:
 		bsm.Bitmaps.Add(reqData.Names[0], reqData.Values[0], false)
-		return sm.Result{}, nil
+	case AddMany:
+		bsm.Bitmaps.AddMany(reqData.Names[0], reqData.Values, false)
+	case Remove:
+		bsm.Bitmaps.Remove(reqData.Names[0], reqData.Values[0], false)
+	case Drop:
+		bsm.Bitmaps.RemoveBitmap(reqData.Names[0], false)
+	case Clear:
+		bsm.Bitmaps.ClearBitmap(reqData.Names[0], false)
+	case InterStore:
+		bsm.Bitmaps.InterStore(reqData.Names[0], reqData.Names[1:]...)
+	case UnionStore:
+		bsm.Bitmaps.UnionStore(reqData.Names[0], reqData.Names[1:]...)
+	case XorStore:
+		bsm.Bitmaps.XorStore(reqData.Names[0], reqData.Names[1], reqData.Names[2])
+	case DiffStore:
+		bsm.Bitmaps.DiffStore(reqData.Names[0], reqData.Names[1], reqData.Names[2])
+	default:
+		return sm.Result{}, errors.New("invalid request type")
 	}
 
-	return sm.Result{}, errors.New("invalid request type")
+	return sm.Result{}, nil
 }
 
 func (bsm *BasaltStateMachine) SaveSnapshot(w io.Writer, fc sm.ISnapshotFileCollection, done <-chan struct{}) error {
