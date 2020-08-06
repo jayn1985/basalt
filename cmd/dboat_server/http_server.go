@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-type ReqType int
+type ReqType byte
 
 const (
 	Add ReqType = iota
