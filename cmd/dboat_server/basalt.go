@@ -79,7 +79,7 @@ func main() {
 		log.Fatalf("failed to start cluster: %v\n", err)
 	}
 
-	srv := NewServer(fmt.Sprintf(":%d", *port), nh)
+	srv := NewServer(fmt.Sprintf(":%d", *port), nh, nil)
 
 	go func() {
 		if err := srv.Serve(); err != nil && err != http.ErrServerClosed {

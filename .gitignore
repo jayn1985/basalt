@@ -15,4 +15,5 @@
 # vendor/
 
 basalt
+basalt_cli
 .idea/
